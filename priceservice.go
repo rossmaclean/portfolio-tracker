@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func getCloseForDate(quotes []goyhfin.Quote, date time.Time) goyhfin.Quote {
+var getCloseForDate = func(quotes []goyhfin.Quote, date time.Time) goyhfin.Quote {
 	for _, quote := range quotes {
 		qYear, qMonth, qDay := quote.ClosesAt.Date()
 		year, month, day := date.Date()
@@ -21,7 +21,7 @@ func getCloseForDate(quotes []goyhfin.Quote, date time.Time) goyhfin.Quote {
 	return goyhfin.Quote{}
 }
 
-func getHistoricalPricesForTicker(ticker string) []goyhfin.Quote {
+var getHistoricalPricesForTicker = func(ticker string) []goyhfin.Quote {
 	resp, err := goyhfin.GetTickerData(ticker, goyhfin.TenYear, goyhfin.OneDay, false)
 	if err != nil {
 		fmt.Println("Error fetching Yahoo Finance data:", err)
@@ -31,7 +31,7 @@ func getHistoricalPricesForTicker(ticker string) []goyhfin.Quote {
 	return resp.Quotes
 }
 
-func getLsePrice(ticker string) float64 {
+var getLsePrice = func(ticker string) float64 {
 	url := "https://api.londonstockexchange.com/api/gw/lse/instruments/alldata/" + ticker
 
 	resp, err := http.Get(url)

@@ -59,34 +59,3 @@ func printMenu(portfolio Portfolio) {
 
 	fmt.Printf("You choose number %d: %s\n", i+1, stockReports[i].Ticker)
 }
-
-func createReport(portfolio Portfolio) PortfolioReport {
-	portfolioReport := PortfolioReport{}
-	for _, holding := range portfolio.Holdings {
-		var currentPrice float64
-		var gainLoss float64
-		hp := getHistoricalPricesForTicker(holding.Ticker)
-		if holding.Provider == "LSE" {
-			currentPrice = getLsePrice(holding.Ticker)
-			gainLoss = roundTo(currentPrice-holding.BoughtAt, 1)
-		} else {
-			currentPrice = getCloseForDate(hp, time.Now()).Close * exchangeRate * 100
-			gainLoss = roundTo(currentPrice-holding.BoughtAt, 1)
-		}
-
-		percentGainLoss := roundTo((10), 2)
-		valueGainLoss := roundTo((currentPrice * holding.Quantity / 100) - (holding.BoughtAt), 1)
-
-		sp := StockReport{
-			Ticker:             holding.Ticker,
-			UnitsHeld:          holding.Quantity,
-			Price:              roundTo(currentPrice, 2),
-			Value:              roundTo(currentPrice*holding.Quantity/100, 2),
-			Cost:               roundTo(holding.BoughtAt, 2),
-			PercentageGainLoss: percentGainLoss,
-			ValueGainLoss:      valueGainLoss,
-		}
-		portfolioReport.StockReports = append(portfolioReport.StockReports, sp)
-	}
-	return portfolioReport
-}
