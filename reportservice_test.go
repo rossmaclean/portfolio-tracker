@@ -4,22 +4,20 @@ import (
 	"reflect"
 	"testing"
 	"time"
-
-	"github.com/svarlamov/goyhfin"
 )
 
 func TestCreateReport(t *testing.T) {
 	var tests = []struct {
 		Name      string
-		portfolio Portfolio
-		want      PortfolioReport
-		mockFunc  func()
+		Portfolio Portfolio
+		Want      PortfolioReport
+		MockFunc  func()
 	}{
 		{
 			Name: "Happy Path",
-			portfolio: Portfolio{
+			Portfolio: Portfolio{
 				Holdings: []Holding{
-					Holding{
+					{
 						Ticker:       "AZN",
 						PurchaseDate: time.Now(),
 						Quantity:     6,
@@ -28,33 +26,14 @@ func TestCreateReport(t *testing.T) {
 					},
 				},
 			},
-			mockFunc: func() {
-				getCloseForDate = func(quaotes []goyhfin.Quote, date time.Time) goyhfin.Quote {
-					return goyhfin.Quote{
-						OpensAt: time.Now(),	
-						Open: 0,
-						High: 0,
-						Low: 0,
-						Close: 10500,
-						Volume: 1,
-						ClosesAt: time.Now(),
-						Period: time.Now().Sub(time.Now()), // This is bullshit, fix it
-					}
-				}
-
-				getHistoricalPricesForTicker = func(ticker string) []goyhfin.Quote {
-					return []goyhfin.Quote{}
-				}
-
-				getLsePrice = func(ticker string) float64 {
+			MockFunc: func() {
+				GetCloseForDate = func(ticker string, date time.Time, provider string) float64 {
 					return 10500
 				}
-
 			},
-		}, {
-			want: PortfolioReport{
+			Want: PortfolioReport{
 				StockReports: []StockReport{
-					StockReport{
+					{
 						Ticker:             "AZN",
 						UnitsHeld:          6,
 						Price:              10500.00,
@@ -63,27 +42,18 @@ func TestCreateReport(t *testing.T) {
 						PercentageGainLoss: 36.57,
 						ValueGainLoss:      168.69,
 					},
-//					StockReport{
-//						Ticker:             "IAG",
-//						UnitsHeld:          534,
-//						Price:              140.36,
-//						Value:              749.52,
-//						Cost:               511.35,
-//						PercentageGainLoss: 46.58,
-//						ValueGainLoss:      238.17,
-//					},
 				},
 			},
 		},
 	}
 
 	for _, tt := range tests {
-		testname := tt.Name
-		t.Run(testname, func(t *testing.T) {
-			tt.mockFunc()
-			ans := createReport(tt.portfolio)
-			if !reflect.DeepEqual(ans, tt.want) {
-				t.Errorf("got %v, want %v", ans, tt.want)
+		testName := tt.Name
+		t.Run(testName, func(t *testing.T) {
+			tt.MockFunc()
+			ans := createReport(tt.Portfolio)
+			if !reflect.DeepEqual(ans, tt.Want) {
+				t.Errorf("got %v, want %v", ans, tt.Want)
 			}
 		})
 	}

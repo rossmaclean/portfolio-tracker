@@ -4,10 +4,7 @@ import (
 	"fmt"
 	"github.com/manifoldco/promptui"
 	"strings"
-	"time"
 )
-
-var exchangeRate = getCloseForDate(getHistoricalPricesForTicker("USDGBP=X"), time.Now()).Close
 
 func main() {
 	portfolio := readPortfolioFromFile("holdings.json")
@@ -19,9 +16,9 @@ func printMenu(portfolio Portfolio) {
 
 	templates := &promptui.SelectTemplates{
 		Label:    "{{ . }}?",
-		Active:   "\U0001F336 {{ .Ticker | cyan }}",
+		Active:   "➡ {{ .Ticker | cyan }}",
 		Inactive: "  {{ .Ticker | cyan }}",
-		Selected: "\U0001F336 {{ .Ticker | red | cyan }}",
+		Selected: "➡ {{ .Ticker | red | cyan }}",
 		Details: `
 --------- Holding ----------
 {{ "Ticker:" | faint }}	{{ .Ticker }}
@@ -29,7 +26,7 @@ func printMenu(portfolio Portfolio) {
 {{ "Price (pence):" | faint }}	{{ .Price }}
 {{ "Value (£):" | faint }}	{{ .Value }}
 {{ "Cost (£):" | faint }}	{{ .Cost }}
------- Gain/Loss -------
+-------- Gain/Loss ---------
 {{ "£:" | faint }}	{{ .ValueGainLoss }}
 {{ "%:" | faint }}	{{ .PercentageGainLoss }}`,
 	}

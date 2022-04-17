@@ -22,6 +22,7 @@ type Holding struct {
 	Quantity     float64
 	BoughtAt     float64
 	Provider     string
+	Cost         float64
 }
 
 type Portfolio struct {
